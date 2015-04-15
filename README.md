@@ -1,6 +1,6 @@
-{{AppVeyor build status badge for master branch}}
+[![Build status](https://ci.appveyor.com/api/projects/status/slalax51x0djryqc/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xwebdeploy/branch/master)
 
-#{{ModuleName}}
+# xWebDeploy
 
 {{Description}}
 
