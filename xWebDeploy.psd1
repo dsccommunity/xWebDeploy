@@ -25,7 +25,7 @@ CompanyName = 'Microsoft Corporation'
 Copyright = '(c) 2014 Microsoft. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'DSC resources for installing an IIS site using the WebDeploy IIS extension'
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''
