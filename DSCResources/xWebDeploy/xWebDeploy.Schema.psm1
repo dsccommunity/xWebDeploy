@@ -55,7 +55,7 @@ Configuration xWebDeploy
     xInstallWebDeploy InstallWebDeployTool
         {
             Ensure = $Ensure
-
+            WebDeployMsi = $WebDeployMsi
         }
 
     #Deploy a web package in IIS
