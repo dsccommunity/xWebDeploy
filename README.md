@@ -35,6 +35,10 @@ Note: This composite resource requires the **Package** resource that ships with 
     - xWebDeploy
     - xWebPackageDeploy
 
+### Unreleased
+
+-  Added support for passing $WebDeployMsi parameter in xWebDeploy.Schema.psm1.
+
 ## Examples
 
 ### Deploy IIS site from the given zip package using the WebDeploy composite resource
