@@ -37,7 +37,7 @@ Note: This composite resource requires the **Package** resource that ships with 
 
 ### Unreleased
 
--  Added support for passing $WebDeployMsi parameter in xWebDeploy.Schema.psm1.
+-  Fix problems with setup on machine with no internet access. Added support for passing $WebDeployMsi parameter in xWebDeploy.Schema.psm1.
 
 ## Examples
 
