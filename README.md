@@ -29,15 +29,18 @@ Note: This composite resource requires the **Package** resource that ships with 
 
 ## Versions
 
+### Unreleased
+
+
+### 1.1.0.0
+
+* Added WebdeployMsi setting to make xWebDeploy work without internet access
+
 ### 1.0.0.0
 
 * Initial release with the following resources 
     - xWebDeploy
     - xWebPackageDeploy
-
-### Unreleased
-
--  Fix problems with setup on machine with no internet access. Added support for passing $WebDeployMsi parameter in xWebDeploy.Schema.psm1.
 
 ## Examples
 
