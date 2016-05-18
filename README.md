@@ -31,6 +31,8 @@ Note: This composite resource requires the **Package** resource that ships with 
 
 ### Unreleased
 
+### 1.2.0.0
+* xWebPackageDeploy: Fixed comparison to check if Destination contains any backslash
 
 ### 1.1.0.0
 
