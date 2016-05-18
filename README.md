@@ -30,6 +30,7 @@ Note: This composite resource requires the **Package** resource that ships with 
 ## Versions
 
 ### Unreleased
+* xWebPackageDeploy: Fixed comparison to check if Destination contains any backslash
 
 ### 1.1.0.0
 
