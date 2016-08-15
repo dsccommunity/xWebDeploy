@@ -32,13 +32,16 @@ test_script:
           {
               throw "$($res.FailedCount) tests failed."
           }
-          else
+          elseif ($Error.Count -gt 0)
           {
-              Write-Host "Tests succeeded"
-              if ($Error.Count)
-              {
-                Write-Host "Errors were detected:`n $Error"
-              }
+            Write-Verbose -Message "Errors were detected in the error stream:"
+            foreach ($err in $Error)
+            {
+                Write-Verbose -Message "$err"
+                Write-Verbose -Message "$($err.Exception.CallStack)"
+                Write-Verbose -Message "$($err.ScriptStackTrace)"
+                Write-Verbose -Message "----------"
+            }
           }
       }
       catch
