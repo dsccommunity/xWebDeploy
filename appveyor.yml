@@ -37,10 +37,10 @@ test_script:
             Write-Verbose -Message "Errors were detected in the error stream:"
             foreach ($err in $Error)
             {
-                Write-Verbose -Message "$err"
-                Write-Verbose -Message "$($err.Exception.CallStack)"
-                Write-Verbose -Message "$($err.ScriptStackTrace)"
-                Write-Verbose -Message "----------"
+                Write-Error -Message "$err"
+                Write-Error -Message "$($err.Exception.CallStack)"
+                Write-Error -Message "$($err.ScriptStackTrace)"
+                Write-Error -Message "----------"
             }
           }
       }
