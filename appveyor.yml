@@ -34,11 +34,13 @@ test_script:
           }
           elseif ($Error.Count -gt 0)
           {
-            Write-Verbose -Message "Errors were detected in the error stream:"
+            Write-Error -Message "Errors were detected in the error stream:"
+            $errors = $error.ToArray()
             foreach ($err in $Error)
             {
-                Write-Error -Message "$err"
+                Write-Error -Message "$($err.Exception.Message)"
                 Write-Error -Message "$($err.Exception.CallStack)"
+                Write-Error -Message "$($err.InvocationInfo)"
                 Write-Error -Message "$($err.ScriptStackTrace)"
                 Write-Error -Message "----------"
             }
