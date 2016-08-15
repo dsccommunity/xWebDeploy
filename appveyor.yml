@@ -34,7 +34,8 @@ test_script:
           }
           else
           {
-              Write-Host -Message "Tests succeeded"
+              Write-Host "Tests succeeded"
+              Write-Host "Error.Count: $Error.Count"
           }
       }
       catch
