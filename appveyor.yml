@@ -28,12 +28,19 @@ test_script:
       {
           $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
           (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
-          if ($res.FailedCount -gt 0) {
+          if ($res.FailedCount -gt 0)
+          {
               throw "$($res.FailedCount) tests failed."
+          }
+          else
+          {
+              Write-Host -Message "Tests succeeded"
           }
       }
       catch
       {
+          # output a message to indicate we caught the exception.
+          Write-Error -message "An error occured running the tests: $($_.FullyQualifiedErrorId)"
           $_ | select *
           throw $_
       }
