@@ -26,14 +26,24 @@ test_script:
       $exception = $null
       try
       {
+          if ($error.Count -gt 0)
+          {
+            Write-Warning -Message '$error.count is not zero'
+            $error.Clear()
+          }
           $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
-          (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
+          if ($error.Count -gt 0)
+          {
+            Write-Warning -Message 'Pester leaked errors in $error'
+         }
+         (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
       }
       catch
       {
           $_ | select *
           throw $_
       }
+
 
       if ($res.FailedCount -gt 0)
       {
@@ -46,44 +56,8 @@ test_script:
         $errors = $error.ToArray()
         foreach ($err in $errors)
         {
-            if ($err -is [System.Management.Automation.ErrorRecord])
-            {
-                Write-Warning -Message $err.CategoryInfo.ToString()
-                Write-Warning -Message $err.FullyQualifiedErrorId
-                Write-Warning -Message $err.ScriptStackTrace.ToString()
-                if ($null -ne $err.Exception)
-                {
-                    $err = $err.Exception
-                }
-                else
-                {
-                    continue
-                }
-            }
-            elseif ($err -is [System.Management.Automation.Runspaces.RemotingErrorRecord])
-            {
-                Write-Warning -Message $err.ToString()
-                Write-Warning -Message $err.CategoryInfo.ToString()
-                Write-Warning -Message $err.CategoryInfo.ToString()
-                if ($null -ne $err.Exception)
-                {
-                    $err = $err.Exception
-                }
-                else
-                {
-                    continue
-                }
-            }
-
-            if ($err -is [System.Exception])
-            {
-                Write-Warning -Message $err.StackTrace.ToString()
-                Write-Warning -Message $err.Message
-            }
-            else
-            {
-                Write-Warning -Message $err.ToString
-            }
+            $err | select * | out-string
+            Write-Warning -Message "---------------------------"
         }
         throw "Tests failed with errors in the output stream"
       }
