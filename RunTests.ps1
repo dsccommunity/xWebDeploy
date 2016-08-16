@@ -7,8 +7,6 @@ param
     [switch] $uploadResults
 )
 
-$testResultsFile = ".\TestsResults.xml"
-
 # When rerunning manually, the previous test result file can cause
 # PSScriptAnalyze to report false errors
 if (Test-Path -Path $testResultsFile)
@@ -24,7 +22,16 @@ try
         $error.Clear()
     }
 
-    $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
+    Start-Transcript -Path '.\pester.transcript.txt'
+    Write-Host 'Pester transcript written to .\pester.transcript.txt'
+    try
+    {
+        $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
+    }
+    finally
+    {
+        Stop-Transcript
+    }
     if ($error.Count -gt 0)
     {
         Write-Warning -Message 'Pester leaked errors in $error'
