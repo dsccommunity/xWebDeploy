@@ -42,7 +42,7 @@ test_script:
 
       if ($Error.Count -gt 0)
       {
-        Write-Warning  "Errors were detected in the error stream:"
+         Write-Warning  "Errors were detected in the error stream:"
         $errors = $error.ToArray()
         foreach ($err in $errors)
         {
@@ -65,7 +65,7 @@ test_script:
             }
         }
         throw "Tests failed with errors in the output stream"
-   }
+      }
 
 #---------------------------------#
 #      deployment configuration   #
