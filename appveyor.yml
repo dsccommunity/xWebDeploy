@@ -46,7 +46,7 @@ test_script:
         $errors = $error.ToArray()
         foreach ($err in $errors)
         {
-            if ($err is [System.Management.Automation.ErrorRecord])
+            if ($err -is [System.Management.Automation.ErrorRecord])
             {
                 Write-Warning -Message $err.CategoryInfo.ToString()
                 Write-Warning -Message $err.FullyQualifiedErrorId
@@ -60,7 +60,7 @@ test_script:
                     continue
                 }
             }
-            elseif ($err is [System.Management.Automation.Runspaces.RemotingErrorRecord])
+            elseif ($err -is [System.Management.Automation.Runspaces.RemotingErrorRecord])
             {
                 Write-Warning -Message $err.ToString()
                 Write-Warning -Message $err.CategoryInfo.ToString()
@@ -75,7 +75,7 @@ test_script:
                 }
             }
 
-            if ($err is [System.Exception])
+            if ($err -is [System.Exception])
             {
                 Write-Warning -Message $err.StackTrace.ToString()
                 Write-Warning -Message $err.Message
