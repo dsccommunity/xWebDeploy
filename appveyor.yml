@@ -42,15 +42,20 @@ test_script:
 
       if ($Error.Count -gt 0)
       {
-        Write-Warning -Message "Errors were detected in the error stream:"
+        Write-Warning  "Errors were detected in the error stream:"
         $errors = $error.ToArray()
         foreach ($err in $Error)
         {
-            Write-Warning -Message "$($err.Exception.Message)"
-            Write-Warning -Message "$($err.Exception.CallStack)"
-            Write-Warning -Message "$($err.InvocationInfo)"
-            Write-Warning -Message "$($err.ScriptStackTrace)"
-            Write-Warning -Message "--------------------"
+            Write-Warning  "Errors were detected in the error stream:"
+            Write-Output $err.CategoryInfo
+            Write-Output $err.FullyQualifiedErrorId
+            Write-Output $err.ScriptStackTrace
+            if ($err.Exception -ne $null)
+            {
+                Write-Output $err.Exception.Message
+                Write-Output $err.Exception.CallStack
+            }
+            Write-Output "--------------------"
         }
         throw "Tests failed with errors in the output stream"
       }
