@@ -44,18 +44,17 @@ test_script:
       {
         Write-Warning  "Errors were detected in the error stream:"
         $errors = $error.ToArray()
-        foreach ($err in $Error)
+        foreach ($err in $errors)
         {
-            Write-Warning  "Errors were detected in the error stream:"
-            Write-Output $err.CategoryInfo
-            Write-Output $err.FullyQualifiedErrorId
-            Write-Output $err.ScriptStackTrace
+            Write-Warning -Message $err.CategoryInfo.ToString()
+            Write-Warning -Message $err.FullyQualifiedErrorId
+            Write-Warning -Message $err.ScriptStackTrace.ToString()
             if ($err.Exception -ne $null)
             {
-                Write-Output $err.Exception.Message
-                Write-Output $err.Exception.CallStack
+                Write-Warning $err.Exception.Message
+                Write-Warning $err.Exception.CallStack.ToString()
             }
-            Write-Output "--------------------"
+            Write-Warning "--------------------"
         }
         throw "Tests failed with errors in the output stream"
       }
