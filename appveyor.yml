@@ -46,22 +46,43 @@ test_script:
         $errors = $error.ToArray()
         foreach ($err in $errors)
         {
-            if ($null -ne $err)
+            if ($err is [System.Management.Automation.ErrorRecord])
             {
-                Write-Warning -Message $err.GetType().FullName
                 Write-Warning -Message $err.CategoryInfo.ToString()
                 Write-Warning -Message $err.FullyQualifiedErrorId
                 Write-Warning -Message $err.ScriptStackTrace.ToString()
-                if ($err.Exception -ne $null)
+                if ($null -ne $err.Exception)
                 {
-                    Write-Warning $err.Exception.Message
-                    Write-Warning $err.Exception.CallStack.ToString()
+                    $err = $err.Exception
                 }
-                Write-Warning "--------------------"
+                else
+                {
+                    continue
+                }
+            }
+            elseif ($err is [System.Management.Automation.Runspaces.RemotingErrorRecord])
+            {
+                Write-Warning -Message $err.ToString()
+                Write-Warning -Message $err.CategoryInfo.ToString()
+                Write-Warning -Message $err.CategoryInfo.ToString()
+                if ($null -ne $err.Exception)
+                {
+                    $err = $err.Exception
+                }
+                else
+                {
+                    continue
+                }
+            }
+
+            if ($err is [System.Exception])
+            {
+                Write-Warning -Message $err.StackTrace.ToString()
+                Write-Warning -Message $err.Message
             }
             else
             {
-                Write-Warning -message 'got a null object in $Error'
+                Write-Warning -Message $err.ToString
             }
         }
         throw "Tests failed with errors in the output stream"
