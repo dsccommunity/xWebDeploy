@@ -46,18 +46,26 @@ test_script:
         $errors = $error.ToArray()
         foreach ($err in $errors)
         {
-            Write-Warning -Message $err.CategoryInfo.ToString()
-            Write-Warning -Message $err.FullyQualifiedErrorId
-            Write-Warning -Message $err.ScriptStackTrace.ToString()
-            if ($err.Exception -ne $null)
+            if ($null -ne $err)
             {
-                Write-Warning $err.Exception.Message
-                Write-Warning $err.Exception.CallStack.ToString()
+                Write-Warning -Message $err.GetType().FullName
+                Write-Warning -Message $err.CategoryInfo.ToString()
+                Write-Warning -Message $err.FullyQualifiedErrorId
+                Write-Warning -Message $err.ScriptStackTrace.ToString()
+                if ($err.Exception -ne $null)
+                {
+                    Write-Warning $err.Exception.Message
+                    Write-Warning $err.Exception.CallStack.ToString()
+                }
+                Write-Warning "--------------------"
             }
-            Write-Warning "--------------------"
+            else
+            {
+                Write-Warning -message 'got a null object in $Error'
+            }
         }
         throw "Tests failed with errors in the output stream"
-      }
+   }
 
 #---------------------------------#
 #      deployment configuration   #
