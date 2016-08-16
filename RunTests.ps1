@@ -4,7 +4,7 @@ param
     [ValidateNotNullOrEmpty()]
     [string] $testResultsFile,
 
-    [switch] $upload
+    [switch] $uploadResults
 )
 
 $testResultsFile = ".\TestsResults.xml"
