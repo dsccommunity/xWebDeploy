@@ -27,7 +27,7 @@ build: false
 test_script:
   - ps: |
       Set-PSDebug
-      Set-PSBreakPoint -script .\RunTests.ps1 -Line 12
+      Wait-Debugger
       .\RunTests.ps1 -testResultsFile ".\TestsResults.xml" -uploadResults
 
 #---------------------------------#
