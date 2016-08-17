@@ -13,7 +13,6 @@ install:
 init:
   - ps: |
       iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-      start-sleep -s 90
 
 #---------------------------------#
 #      build configuration        #
@@ -27,6 +26,7 @@ build: false
 
 test_script:
   - ps: |
+      Set-PSBreakPoint -Script .\RunTests.ps1 -Line 12
       .\RunTests.ps1 -testResultsFile ".\TestsResults.xml" -uploadResults
 
 #---------------------------------#
