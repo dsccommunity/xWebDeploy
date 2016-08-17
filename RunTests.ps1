@@ -7,6 +7,8 @@ param
     [switch] $uploadResults
 )
 
+Wait-Debugger
+
 # When rerunning manually, the previous test result file can cause
 # PSScriptAnalyze to report false errors
 if (Test-Path -Path $testResultsFile)

@@ -26,8 +26,6 @@ build: false
 
 test_script:
   - ps: |
-      Set-PSDebug
-      Wait-Debugger
       .\RunTests.ps1 -testResultsFile ".\TestsResults.xml" -uploadResults
 
 #---------------------------------#
