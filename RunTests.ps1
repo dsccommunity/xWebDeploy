@@ -23,7 +23,6 @@ try
     }
 
     Start-Transcript -Path '.\pester.transcript.txt'
-    Write-Host 'Pester transcript written to .\pester.transcript.txt'
     try
     {
         $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
@@ -57,7 +56,8 @@ if ($res.FailedCount -gt 0)
 if ($Error.Count -gt 0)
 {
     Write-Warning  "Errors were detected in the error stream:"
-    $error | select * | out-string
+    $error | select *
+    Write-Warning -Message "---------------------------"
 
     $errors = $error.ToArray()
     foreach ($err in $errors)

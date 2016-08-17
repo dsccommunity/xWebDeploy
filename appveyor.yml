@@ -26,7 +26,7 @@ build: false
 
 test_script:
   - ps: |
-      Set-PSBreakPoint -Script .\RunTests.ps1 -Line 12
+      Start-Sleep -s 60
       .\RunTests.ps1 -testResultsFile ".\TestsResults.xml" -uploadResults
 
 #---------------------------------#
