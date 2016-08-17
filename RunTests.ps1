@@ -57,7 +57,7 @@ if ($res.FailedCount -gt 0)
 if ($Error.Count -gt 0)
 {
     Write-Warning  "Errors were detected in the error stream:"
-    $error | select * | out-string.
+    $error | select * | out-string
 
     $errors = $error.ToArray()
     foreach ($err in $errors)
