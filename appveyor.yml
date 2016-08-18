@@ -28,6 +28,7 @@ test_script:
   - ps: |
       .\RunTests.ps1 -testResultsFile ".\TestsResults.xml" -uploadResults
 
+
 #---------------------------------#
 #      deployment configuration   #
 #---------------------------------#
