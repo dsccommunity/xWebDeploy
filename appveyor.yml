@@ -28,6 +28,7 @@ test_script:
         if ($res.FailedCount -gt 0) { 
             throw "$($res.FailedCount) tests failed."
         }
+        $error.Clear()
     
 #---------------------------------# 
 #      deployment configuration   # 
