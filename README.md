@@ -29,11 +29,13 @@ Note: This composite resource requires the **Package** resource that ships with 
 * **SourcePath**: The full path on the filesystem where the web deploy package (as a zip file) is located. 
 * **Destination**: The IIS content path or IIS site name to install the WebDeploy zip package. 
 * **Ensure**: Ensures that the web package is installed: { Present | Absent }
+* **UseAutoForDeployment**: Use 'auto' as the destination provider when deploying.  The path or IIS site must still be specified in the Destination otherwise the Test- and Get- functions will not work.
 
 ## Versions
 
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
+* xWebPackageDeploy: Added UseAutoForDeployment option
 
 ### 1.2.0.0
 * xWebPackageDeploy: Fixed comparison to check if Destination contains any backslash

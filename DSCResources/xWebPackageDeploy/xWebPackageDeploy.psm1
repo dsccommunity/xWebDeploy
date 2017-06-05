@@ -77,7 +77,10 @@ function Set-TargetResource
         
           [ValidateSet("Present","Absent")]
         [System.String]
-        $Ensure = "Present"
+        $Ensure = "Present",
+
+        [System.Boolean]
+        $UseAutoForDeployment = $false
     )
 
     Write-Verbose -Message "Calling msdeploy.exe to sync the site content from a given zip package"
@@ -90,16 +93,21 @@ function Set-TargetResource
     if($Ensure -eq "Present")
     {
         #sync the given package content into iis
-        
-        if($Destination.Contains("\"))
+        if ($UseAutoForDeployment)
         {
-              #this is the case when iis site content path is specified
-             $appCmd += "-verb:sync -source:package=$SourcePath -dest:contentPath=$Destination"
+            $appCmd += "-verb:sync -source:package=$SourcePath -dest:auto"
         }
-        else
-        {
-            #this is the case when iis site name is specified
-            $appCmd += "-verb:sync -source:package=$SourcePath -dest:iisApp=$Destination"           
+        else {
+            if($Destination.Contains("\"))
+            {
+                #this is the case when iis site content path is specified
+                $appCmd += "-verb:sync -source:package=$SourcePath -dest:contentPath=$Destination"
+            }
+            else
+            {
+                #this is the case when iis site name is specified
+                $appCmd += "-verb:sync -source:package=$SourcePath -dest:iisApp=$Destination"           
+            }          
         }
         Write-Verbose -Message $appCmd
         Invoke-Expression $appCmd
