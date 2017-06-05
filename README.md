@@ -35,7 +35,7 @@ Note: This composite resource requires the **Package** resource that ships with 
 
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
-* xWebPackageDeploy: Added UseAutoForDeployment option
+* xWebPackageDeploy: Added UseAutoForDeployment option.
 
 ### 1.2.0.0
 * xWebPackageDeploy: Fixed comparison to check if Destination contains any backslash
