@@ -1,3 +1,9 @@
+
+# Import ResourceSetHelper for New-ResourceSetConfigurationScriptBlock
+$script:dscResourcesFolderFilePath = Split-Path -Path $PSScriptRoot -Parent
+$script:resourceSetHelperFilePath = Join-Path -Path $script:dscResourcesFolderFilePath -ChildPath 'ResourceSetHelper.psm1'
+Import-Module -Name $script:resourceSetHelperFilePath
+
 # Composite configuration to install the Web Deploy 3.5 IIS extension (MSDeploy) from default URL : http://go.microsoft.com/fwlink/?LinkID=309497. Supports MSWebDeploy sync, dump verbs with iisApp , contentPath parameters.
 # Examples of sync verb used with ContentPath and iisApp paramters:
 #            -verb:sync -source:package=$SourcePath -dest:contentPath=$Destination       
@@ -47,10 +53,8 @@ Configuration xWebDeploy
         $Ensure,
 
         [string] $WebDeployMsi = "http://go.microsoft.com/fwlink/?LinkID=309497"
-
-      
     )      
-   Import-DSCResource -Name xWebPackageDeploy
+
     #Install WebDeploy IIS extension on the machine
     xInstallWebDeploy InstallWebDeployTool
         {
@@ -58,16 +62,19 @@ Configuration xWebDeploy
             WebDeployMsi = $WebDeployMsi
         }
 
-    #Deploy a web package in IIS
-    xWebPackageDeploy DeployWebPackage
-       {
-            SourcePath = $SourcePath
-            Destination = $Destination
-            Ensure = $Ensure
+    $newResourceSetConfigurationParams = @{
+        ResourceName = 'xWebPackageDeploy'
+        ModuleName = 'xWebDeploy'
+        KeyParameterName = 'Destination'
+        Parameters = $PSBoundParameters
+    }
+    
+    $configurationScriptBlock = New-ResourceSetConfigurationScriptBlock @newResourceSetConfigurationParams
 
-       } 
+    # This script block must be run directly in this configuration in order to resolve variables
+    . $configurationScriptBlock
+
 }
 
 Export-ModuleMember -Function xInstallWebDeploy
 Export-ModuleMember -Function xWebDeploy
-
