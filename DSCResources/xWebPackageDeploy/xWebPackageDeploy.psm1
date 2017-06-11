@@ -9,8 +9,7 @@
 # the package is deployed and return the result
 #########################################################################################################################################
 
-function Get-TargetResource
-{
+function Get-TargetResource {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -19,7 +18,7 @@ function Get-TargetResource
         [System.String]
         $SourcePath,
 
-       [parameter(Mandatory = $true)]
+        [parameter(Mandatory = $true)]
         [System.String]
         $Destination
     )
@@ -27,31 +26,28 @@ function Get-TargetResource
     $appCmd = "$env:PROGRAMFILES\IIS\Microsoft Web Deploy V3\msdeploy.exe"
     $ensure = "Absent"
     Write-Verbose -Message "Calling msdeploy.exe to retrieve the site content in a zip file format"
-      & $appCmd -verb:sync "-source:contentPath=$Destination" "-dest:package=$SourcePath" 
+    & $appCmd -verb:sync "-source:contentPath=$Destination" "-dest:package=$SourcePath" 
 
     # $Destination in this case points to website content full path.
-    if(Test-Path($Destination))
-    {
+    if (Test-Path($Destination)) {
         $ensure = "Present"
     }        
-    else
-    {
+    else {
         # this is the case where $Destination points to IIS website name and not the website content path
         $site = Get-ItemProperty -Path "IIS:\Sites\$Destination" -ErrorAction SilentlyContinue
-        if ($site -ne $null)
-        {
-           $path = $site.physicalPath           
-           if(Test-Path($path))
-           {
-             $ensure = "Present"
-           }
+        if ($site -ne $null) {
+            $path = $site.physicalPath           
+            if (Test-Path($path)) {
+                $ensure = "Present"
+            }
         }
     }
 
     $returnValue = @{
-    SourcePath = $SourcePath
-    Destination = $Destination            
-    Ensure = $ensure}    
+        SourcePath  = $SourcePath
+        Destination = $Destination            
+        Ensure      = $ensure
+    }    
 
     $returnValue
     
@@ -62,8 +58,7 @@ function Get-TargetResource
 # the website content
 #########################################################################################################################################
 
-function Set-TargetResource
-{
+function Set-TargetResource {
     [CmdletBinding()]
     param
     (
@@ -74,8 +69,11 @@ function Set-TargetResource
         [parameter(Mandatory = $true)]
         [System.String]
         $Destination,
+
+        [System.Boolean]
+        $UseAutoForDeployment = $false,
         
-          [ValidateSet("Present","Absent")]
+        [ValidateSet("Present", "Absent")]
         [System.String]
         $Ensure = "Present"
     )
@@ -87,43 +85,40 @@ function Set-TargetResource
     $appCmd = Join-Path $app -ChildPath "msdeploy.exe"
     $appCmd = "& '$appCmd'"   
         
-    if($Ensure -eq "Present")
-    {
+    if ($Ensure -eq "Present") {
         #sync the given package content into iis
-        
-        if($Destination.Contains("\"))
-        {
-              #this is the case when iis site content path is specified
-             $appCmd += "-verb:sync -source:package=$SourcePath -dest:contentPath=$Destination"
+        if ($UseAutoForDeployment) {
+            $appCmd += "-verb:sync -source:package=$SourcePath -dest:auto"
         }
-        else
-        {
-            #this is the case when iis site name is specified
-            $appCmd += "-verb:sync -source:package=$SourcePath -dest:iisApp=$Destination"           
+        else {
+            if ($Destination.Contains("\")) {
+                #this is the case when iis site content path is specified
+                $appCmd += "-verb:sync -source:package=$SourcePath -dest:contentPath=$Destination"
+            }
+            else {
+                #this is the case when iis site name is specified
+                $appCmd += "-verb:sync -source:package=$SourcePath -dest:iisApp=$Destination"           
+            }          
         }
         Write-Verbose -Message $appCmd
         Invoke-Expression $appCmd
 
     }
-    else
-    {
-      #delete the website content    
-      if($Destination.Contains("\"))
-      {
-        # $SourcePath in this case points to physical path of the website.
-          Remove-Item -Path $Destination -Recurse -ErrorAction SilentlyContinue 
-      }      
-      else
-      {
-        # this is the case where $SourcePath points to IIS website name and not the actual path
-        $site = Get-ItemProperty -Path "IIS:\Sites\$Destination" -ErrorAction SilentlyContinue
-        if ($site -ne $null)
-        {
-           $path = $site.physicalPath
-           $files = Get-Item -Path $path -ErrorAction SilentlyContinue           
-           Remove-Item -Path $files -Recurse -ErrorAction SilentlyContinue 
-        }
-      }  
+    else {
+        #delete the website content    
+        if ($Destination.Contains("\")) {
+            # $SourcePath in this case points to physical path of the website.
+            Remove-Item -Path $Destination -Recurse -ErrorAction SilentlyContinue 
+        }      
+        else {
+            # this is the case where $SourcePath points to IIS website name and not the actual path
+            $site = Get-ItemProperty -Path "IIS:\Sites\$Destination" -ErrorAction SilentlyContinue
+            if ($site -ne $null) {
+                $path = $site.physicalPath
+                $files = Get-Item -Path $path -ErrorAction SilentlyContinue           
+                Remove-Item -Path $files -Recurse -ErrorAction SilentlyContinue 
+            }
+        }  
 
     }    
 }
@@ -133,8 +128,7 @@ function Set-TargetResource
 # determine whether the package is deployed or not.
 #########################################################################################################################################
 
-function Test-TargetResource
-{
+function Test-TargetResource {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -147,7 +141,10 @@ function Test-TargetResource
         [System.String]
         $Destination,
 
-        [ValidateSet("Present","Absent")]
+        [System.Boolean]
+        $UseAutoForDeployment = $false,
+        
+        [ValidateSet("Present", "Absent")]
         [System.String]
         $Ensure = "Present"
     )
@@ -157,47 +154,64 @@ function Test-TargetResource
     #get all the files from a given package
     $packageFiles = & $appCmd -verb:dump "-source:package=$SourcePath"
  
-    if($Ensure -eq "Present")
-    {
-         #find all the files for a given site
+    if ($Ensure -eq "Present") {
+        #find all the files for a given site
         $siteFiles = & $appCmd -verb:dump "-source:contentPath=$Destination"
         # the packages exported using webdeploy tool, contain 2 extra entries with site name. Skipping those..
         #compare based on the number of files
-        if(($packageFiles.Count -eq $siteFiles.Count) -or (($packageFiles.Count -2) -eq $siteFiles.Count) )
+        if ( -not (Compare-WebDeployPackages $packageFiles $siteFiles ) )
         {
             $result = $true
-        }
-     }   
-    else
-    {       
-        #find the website's physical path if $Destination points to a site name
-        $site = Get-ItemProperty -Path "IIS:\Sites\$Destination" -ErrorAction SilentlyContinue
-        if ($site -ne $null)
-        {
-           $path = $site.physicalPath
-           $files = Get-Item -Path $path -ErrorAction SilentlyContinue
-           if ($files -ne $null)
-            {
-                $f = $files.GetFiles()
-            }
-            if($f.Count >1)
-            {
-                $result = $true
-            }            
-        }
-        #this is the case when $Destination points to the website's physical path 
+        }   
         else
-        {
-            if(Test-Path($Destination))
+        {       
+            #find the website's physical path if $Destination points to a site name
+            $site = Get-ItemProperty -Path "IIS:\Sites\$Destination" -ErrorAction SilentlyContinue
+            if ($site -ne $null) 
             {
-                $result = $true
-            } 
+                $path = $site.physicalPath
+                $files = Get-Item -Path $path -ErrorAction SilentlyContinue
+                if ($files -ne $null) 
+                {
+                    $f = $files.GetFiles()
+                }
+                if ($f.Count >1) 
+                {
+                    $result = $true
+                }            
+            }
+            #this is the case when $Destination points to the website's physical path 
+            else 
+            {
+                if (Test-Path($Destination))
+                {
+                    $result = $true
+                } 
+            }
         }
-     }
-    $result    
+        $result    
+    }
 }
 
+function Compare-WebDeployPackages {
+    param (
+        $CompareA,
+        $CompareB
+    )
 
+    # get the path from the second line of the dump from webdeploy. Replace \ with \\ (for regex search on next line)
+    $path = $CompareA[1].Replace('\', '\\')
+    # remove the path from each line, as this may be different
+    # skip the first line because that states whether it is a MSDeploy.contentPath or sitemanifest
+    # ignore any resulting empty lines
+    # sort to ensure the order is correct
+    $RelevantItemsFromA = $CompareA -replace "$path", '' | select-object -skip 1 | where-object { $_ -ne '' } | sort-object
 
+    # repeat using the other object
+    $path = $CompareB[1].Replace('\', '\\')
+    $RelevantItemsFromB = $CompareB -replace "$path", '' | select-object -skip 1 | where-object { $_ -ne '' } | sort-object
 
+    # now a standard compare-object will do the work, we just need to check for $null to ensure the two objects are unique.
+    Compare-Object $RelevantItemsFromA $RelevantItemsFromB
 
+}
