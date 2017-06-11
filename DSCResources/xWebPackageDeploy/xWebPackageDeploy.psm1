@@ -74,13 +74,13 @@ function Set-TargetResource
         [parameter(Mandatory = $true)]
         [System.String]
         $Destination,
-        
-          [ValidateSet("Present","Absent")]
-        [System.String]
-        $Ensure = "Present",
 
         [System.Boolean]
-        $UseAutoForDeployment = $false
+        $UseAutoForDeployment = $false,
+        
+        [ValidateSet("Present","Absent")]
+        [System.String]
+        $Ensure = "Present"
     )
 
     Write-Verbose -Message "Calling msdeploy.exe to sync the site content from a given zip package"
@@ -155,6 +155,9 @@ function Test-TargetResource
         [System.String]
         $Destination,
 
+        [System.Boolean]
+        $UseAutoForDeployment = $false,
+        
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present"
