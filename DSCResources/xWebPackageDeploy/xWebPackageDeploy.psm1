@@ -161,12 +161,12 @@ function Test-TargetResource
     {
          #find all the files for a given site
         $siteFiles = & $appCmd -verb:dump "-source:contentPath=$Destination"
-        # the packages exported using webdeploy tool, contain 2 extra entries with site name. Skipping those..
-        #compare based on the number of files
-        if(($packageFiles.Count -eq $siteFiles.Count) -or (($packageFiles.Count -2) -eq $siteFiles.Count) )
+
+        # compare based on the filenames in the package, ignoring the parent path.
+        if ( -not (Compare-WebDeployPackages $packageFiles $siteFiles ) )
         {
             $result = $true
-        }
+        } 
      }   
     else
     {       
@@ -197,7 +197,25 @@ function Test-TargetResource
     $result    
 }
 
+function Compare-WebDeployPackages {
+    param (
+        $CompareA,
+        $CompareB
+    )
 
+    # get the path from the second line of the dump from webdeploy. Replace \ with \\ (for regex search on next line)
+    $path = $CompareA[1].Replace('\', '\\')
+    # remove the path from each line, as this may be different
+    # skip the first line because that states whether it is a MSDeploy.contentPath or sitemanifest
+    # ignore any resulting empty lines
+    # sort to ensure the order is correct
+    $RelevantItemsFromA = $CompareA -replace "$path", '' | select-object -skip 1 | where-object { $_ -ne '' } | sort-object
 
+    # repeat using the other object
+    $path = $CompareB[1].Replace('\', '\\')
+    $RelevantItemsFromB = $CompareB -replace "$path", '' | select-object -skip 1 | where-object { $_ -ne '' } | sort-object
 
+    # now a standard compare-object will do the work, we just need to check for $null to ensure the two objects are unique.
+    Compare-Object $RelevantItemsFromA $RelevantItemsFromB
 
+}
