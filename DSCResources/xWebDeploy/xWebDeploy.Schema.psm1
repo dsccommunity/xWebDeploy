@@ -20,9 +20,29 @@ Configuration xInstallWebDeploy
 
     )    
 
+    Script DownloadMsi {
+        GetScript = {
+            @{
+                GetScript = $GetScript
+                SetScript = $SetScript
+                TestScript = $TestScript
+                Result = ('True' -in (Test-Path "$env:WINDIR\temp\WebDeploy.msi"))
+            }
+        }
+    
+        SetScript = {
+            Invoke-WebRequest -Uri "http://go.microsoft.com/fwlink/?LinkID=309497" -OutFile "$env:WINDIR\temp\WebDeploy.msi"
+        }
+    
+        TestScript = {
+            $Status = ('True' -in (Test-Path "$env:WINDIR\temp\WebDeploy.msi"))
+            $Status -eq $True
+        }
+    }
+
     Package InstallWebDeployTool
           {
-            Path  = $WebDeployMsi
+            Path  = "$env:WINDIR\temp\WebDeploy.msi"
             ProductId = "{1A81DA24-AF0B-4406-970E-54400D6EC118}"
             Name = "Microsoft Web Deploy 3.5"
             Arguments = "/quiet"

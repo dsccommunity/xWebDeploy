@@ -58,7 +58,7 @@ function Get-TargetResource
 }
 
 #########################################################################################################################################
-# Set-TargetResource ([string]$SourcePath, [string]$Destination, [string]$Ensure) : given the package and IIS website name or content path, deploy/remove
+# Set-TargetResource ([string]$SourcePath, [string]$Destination, [string]$Ensure) : given the package/folder and IIS website name or content path, deploy/remove
 # the website content
 #########################################################################################################################################
 
@@ -80,7 +80,7 @@ function Set-TargetResource
         $Ensure = "Present"
     )
 
-    Write-Verbose -Message "Calling msdeploy.exe to sync the site content from a given zip package"
+    Write-Verbose -Message "Calling msdeploy.exe to sync the site content from a given zip package or content folder"
 
     $app = "$env:PROGRAMFILES\IIS\Microsoft Web Deploy V3"
 
@@ -89,17 +89,23 @@ function Set-TargetResource
         
     if($Ensure -eq "Present")
     {
-        #sync the given package content into iis
+        $sourceType ="package"
+        # Zip files are treated as packages
+        # If the input is not a zip file, then treat it as a content folder.
+        if($SourcePath.Contains(".zip") -ne $true) {
+            $sourceType = "contentpath"
+        }
         
+        #sync the given package content into iis
         if($Destination.Contains("\"))
         {
               #this is the case when iis site content path is specified
-             $appCmd += "-verb:sync -source:package=$SourcePath -dest:contentPath=$Destination"
+             $appCmd += "-verb:sync -source:$sourceType=$SourcePath -dest:contentPath=$Destination"
         }
         else
         {
             #this is the case when iis site name is specified
-            $appCmd += "-verb:sync -source:package=$SourcePath -dest:iisApp=$Destination"           
+            $appCmd += "-verb:sync -source:$sourceType=$SourcePath -dest:iisApp=$Destination"           
         }
         Write-Verbose -Message $appCmd
         Invoke-Expression $appCmd
@@ -154,8 +160,14 @@ function Test-TargetResource
     $result = $false    
     $appCmd = "$env:PROGRAMFILES\IIS\Microsoft Web Deploy V3\msdeploy.exe"
 
+    $sourceType = "package"
+
+    if($SourcePath.Contains(".zip") -ne $true) {
+        $sourceType = "contentPath"
+    }
+
     #get all the files from a given package
-    $packageFiles = & $appCmd -verb:dump "-source:package=$SourcePath"
+    $packageFiles = & $appCmd -verb:dump "-source:$sourceType=$SourcePath"
  
     if($Ensure -eq "Present")
     {
