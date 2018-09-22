@@ -34,10 +34,12 @@ Note: This composite resource requires the **Package** resource that ships with 
 
 ### Unreleased
 
-* Updated appveyor.yml to the default template.
+* Update appveyor.yml to use the default template.
 * Activated the GitHub App Stale on the GitHub repository.
 * Updated manifest property PowerShellVersion to '4.0' to pass tests.
 * Added unit_template.ps1 to Tests\Unit folder.
+* Added default template files .codecov.yml, .gitattributes, and .gitignore, and
+  .vscode folder.
 
 ### 1.2.0.0
 * xWebPackageDeploy: Fixed comparison to check if Destination contains any backslash
